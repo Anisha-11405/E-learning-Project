@@ -1,6 +1,7 @@
 package springboot.demo.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import springboot.demo.entity.Course;
 import springboot.demo.service.CourseService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/courses")
@@ -17,8 +21,9 @@ public class CourseContoller {
     CourseService courser;
 
     @PostMapping("/add")
-    public Course insCourse(@RequestBody Course c) {        
-        return courser.addCourse(c);
+    public ResponseEntity<Course>addCourse(@RequestBody Course course){
+        Course scourse=courser.addCourse(course);
+        return ResponseEntity.ok(scourse);
     }
 
     @GetMapping("/get")
@@ -26,9 +31,17 @@ public class CourseContoller {
         return courser.getCourse();
     }
 
+    @GetMapping("/get/{id}")
+    public ResponseEntity<Course>getCourseById(@PathVariable Long id){
+        Optional<Course>course=courser.getCourseById(id);
+        return course.map(ResponseEntity::ok).orElseGet(()->ResponseEntity.notFound().build());
+    }
+    
+
     @PutMapping("/update/{id}")
-    public Course updatCourse(@PathVariable Long id, @RequestBody Course course) {        
-        return courser.updatCourse(id, course);
+    public ResponseEntity<Course>updateCourse(@PathVariable Long id, @RequestBody Course uCourse){
+        Course course=courser.updatCourse(id, uCourse);
+        return ResponseEntity.ok(course);
     }
 
     @DeleteMapping("/delete/{id}")

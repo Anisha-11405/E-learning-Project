@@ -1,8 +1,10 @@
 package springboot.demo.entity;
 
-import jakarta.persistence.*;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.*;
 
 @Entity
 public class Student {
@@ -12,9 +14,19 @@ public class Student {
     private String name;
     private String email;
 
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Course> courses;
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Course>courses;
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+        for(Course course: courses){
+            course.setStudent(this);
+        }
+    }
 
     public Student() {
     }
@@ -41,13 +53,5 @@ public class Student {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public List<Course> getCourses() {
-        return courses;
-    }
-
-    public void setCourses(List<Course> courses) {
-        this.courses = courses;
     }
 }

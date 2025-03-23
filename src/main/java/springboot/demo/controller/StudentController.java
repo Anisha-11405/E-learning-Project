@@ -1,6 +1,8 @@
 package springboot.demo.controller;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import springboot.demo.entity.Student;
 import springboot.demo.service.StudentService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 public class StudentController {
@@ -15,8 +20,9 @@ public class StudentController {
     private StudentService studentser;
 
     @PostMapping("/sdd")
-    public ResponseEntity<?> insStudent(@RequestBody Student s) {        
-        return ResponseEntity.ok(studentser.addStudent(s));
+    public ResponseEntity<Student> insStudent(@RequestBody Student s) { 
+        Student sstu=studentser.addStudent(s);       
+        return ResponseEntity.ok(sstu);
     }
 
     @GetMapping("/sget")
@@ -24,12 +30,17 @@ public class StudentController {
         return ResponseEntity.ok(studentser.getStudent());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Student>getStudentById(@PathVariable Long id){
+        Optional<Student>student=studentser.getStudentById(id);
+        return student.map(ResponseEntity::ok).orElseGet(()->ResponseEntity.notFound().build());
+    }
+    
+
     @PutMapping("/supdate/{id}")
-    public ResponseEntity<?> updateStudent(@PathVariable Long id, @RequestBody Student stu) {  
-        if (id < 0) {
-            return ResponseEntity.badRequest().body("Student ID must be a positive number.");
-        }      
-        return ResponseEntity.ok(studentser.updateStudent(id, stu));
+    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody Student ustu) {  
+        Student stu=studentser.updateStudent(id, ustu);
+        return ResponseEntity.ok(stu);
     }
 
     @DeleteMapping("/sdelete/{id}")

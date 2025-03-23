@@ -1,5 +1,7 @@
 package springboot.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -13,6 +15,7 @@ public class Course {
 
     @ManyToOne
     @JoinColumn(name = "student_id")
+    @JsonBackReference
     private Student student;
 
     public Course() {
@@ -57,4 +60,5 @@ public class Course {
     public void setStudent(Student student) {
         this.student = student;
     }
+
 }

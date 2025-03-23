@@ -1,6 +1,7 @@
 package springboot.demo.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,9 +24,16 @@ public class CourseService {
     public List<Course>getCourse(){
         return courserepo.findAll();
     }
-    public Course updatCourse(Long id,Course course){
-        course.setId(id);
-        return courserepo.save(course);
+    public Optional<Course>getCourseById(Long id){
+        return courserepo.findById(id);
+    }
+    public Course updatCourse(Long id,Course ucourse){
+        return courserepo.findById(id).map(course->{
+            course.setTitle(ucourse.getTitle());
+            course.setDescription(ucourse.getDescription());
+            course.setInstructor(ucourse.getInstructor());
+            return courserepo.save(course);
+        }).orElseThrow(()->new RuntimeException("Course not found"));
     }
     public String deleteCourse(Long id){
         courserepo.deleteById(id);
