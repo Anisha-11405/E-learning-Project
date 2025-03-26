@@ -1,11 +1,17 @@
 package springboot.demo.entity;
 
 import java.time.LocalDate;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 
 @Entity
 public class Trainer {
@@ -16,8 +22,20 @@ public class Trainer {
     private String email;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String AssignedCourses;
-    private String Course;
+
+    @ManyToMany
+    @JoinTable(
+        name = "trainer_course",joinColumns = @JoinColumn(name="trainer_id"),inverseJoinColumns = @JoinColumn(name="course_id")
+    )
+    @JsonIgnoreProperties("trainers")
+    private List<Course>assignedCourses;
+
+    public List<Course> getAssignedCourses() {
+        return assignedCourses;
+    }
+    public void setAssignedCourses(List<Course> assignedCourses) {
+        this.assignedCourses = assignedCourses;
+    }
     public Trainer() {
     }
     public Long getId() {
@@ -49,17 +67,5 @@ public class Trainer {
     }
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
-    }
-    public String getAssignedCourses() {
-        return AssignedCourses;
-    }
-    public void setAssignedCourses(String assignedCourses) {
-        AssignedCourses = assignedCourses;
-    }
-    public String getCourse() {
-        return Course;
-    }
-    public void setCourse(String course) {
-        Course = course;
     }
 }

@@ -1,6 +1,8 @@
 package springboot.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 
@@ -15,8 +17,20 @@ public class Course {
 
     @ManyToOne
     @JoinColumn(name = "student_id")
-    @JsonBackReference
+    @JsonIgnoreProperties("courses")
     private Student student;
+
+    @ManyToMany(mappedBy = "assignedCourses")
+    @JsonIgnoreProperties("assignedCourses")
+    private List<Trainer> trainers;
+
+    public List<Trainer> getTrainers() {
+        return trainers;
+    }
+
+    public void setTrainers(List<Trainer> trainers) {
+        this.trainers = trainers;
+    }
 
     public Course() {
     }
@@ -59,6 +73,5 @@ public class Course {
 
     public void setStudent(Student student) {
         this.student = student;
-    }
-
+    } 
 }

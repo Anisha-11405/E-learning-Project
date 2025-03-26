@@ -1,6 +1,7 @@
 package springboot.demo.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,9 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import springboot.demo.entity.Trainer;
 import springboot.demo.service.TrainerService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
-@Validated  // Enables validation on method parameters
+@Validated
 public class TrainerController {
 
     @Autowired
@@ -27,6 +31,7 @@ public class TrainerController {
         return ResponseEntity.ok(trainerser.addTrainer(t));
     }
 
+    
     @PutMapping("/tupdate/{id}")
     public ResponseEntity<?> updateTrainer(@PathVariable Long id, @Valid @RequestBody Trainer trainer) {
         if (!isValidEmail(trainer.getEmail())) {
@@ -45,6 +50,17 @@ public class TrainerController {
         return ResponseEntity.ok(trainerser.deleteTrainer(id));
     }
 
+    @PostMapping("/assignCourses/{trainerId}")
+    public ResponseEntity<Trainer>assignCourses(@PathVariable Long trainerId, @RequestBody Map<String, List<Long>>request){
+        List<Long>courseIds=request.get("courseIds");
+        return ResponseEntity.ok(trainerser.assignCoursesToTrainer(trainerId, courseIds));
+    }
+    public String postMethodName(@RequestBody String entity) {
+        //TODO: process POST request
+        
+        return entity;
+    }
+    
     @GetMapping("/tpage")
     public ResponseEntity<Page<Trainer>> getByPage(@RequestParam int page, @RequestParam int size) {
         return ResponseEntity.ok(trainerser.getPageTrainer(page, size));
@@ -70,7 +86,6 @@ public class TrainerController {
         return ResponseEntity.ok(trainerser.getbytrainerName(trainerName));
     }
 
-    //  Improved email validation method
     private boolean isValidEmail(String email) {
         return email != null && email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.com$");
     }
